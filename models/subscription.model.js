@@ -24,7 +24,7 @@ const subscriptionSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ["sports", "news", "entartainment", "lifestyle", "tech", "finance", "politics", "other"],
+        enum: ["sports", "news", "entertainment", "lifestyle", "tech", "finance", "politics", "other"],
         required: true
     },
     paymentMethod: {
@@ -41,13 +41,13 @@ const subscriptionSchema = new mongoose.Schema({
         type: Date,
         required: true,
         validate: {
-            validator: (value) => value <= Date.now,
+            validator: (value) => value <= Date.now(),
             message: "Start date can't be future data"
         }
     },
     renewalDate: {
         type: Date,
-        required: true,
+        required: false,
         validate: {
             validator: function (value) { 
                 return value > this.startDate
@@ -63,7 +63,7 @@ const subscriptionSchema = new mongoose.Schema({
     }
 }, {timestamps: true});
 
-subscriptionSchema.pre('save', (next) => {
+subscriptionSchema.pre('save', function (next) {
     if(!this.renewalDate) {
         const renewalPeriods = {
             daily: 1,
