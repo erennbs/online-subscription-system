@@ -25,3 +25,19 @@ export const getUser = async (req, res, next) => {
         next(error)
     }
 }
+
+export const deleteUser = async (req, res, next) => {
+    try {
+        if (req.params.id !== req.user.id) {
+            const error = new Error("You are not the owner of this account");
+            error.statusCode = 401;
+            throw error;
+        }
+        
+        await User.findByIdAndDelete(req.params.id);
+
+        res.status(204).json({success: true, message: "User deleted successfully"});
+    } catch (error) {
+        next(error)
+    }
+}
