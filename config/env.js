@@ -5,7 +5,9 @@ config({path: `.env.${process.env.NODE_ENV || 'development.local'}`});
 export const {
     PORT, 
     NODE_ENV, 
+    DOMAIN,
     DB_URI, 
     JWT_SECRET, 
-    JWT_EXPIRES_IN
+    JWT_EXPIRES_IN,
+    STRIPE_SECRET
 } = process.env;

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import SubscriptionPlan from "../models/subscriptionPlan.model.js";
+import { stripe } from "../config/stripe.js";
 
 export const getSubscriptionPlans = async (req, res, next) => {
     try {
@@ -28,11 +29,27 @@ export const getSubscriptionPlan = async (req, res, next) => {
 }
 
 export const createSubscriptionPlan = async (req, res, next) => {
+    const session = await mongoose.startSession();
     try {
-        const plan = await SubscriptionPlan.create(req.body);
+        session.startTransaction();
+        const price = await stripe.prices.create({
+            currency: "usd",
+            unit_amount: req.body.priceUSD * 100,
+            recurring: {
+                interval: req.body.interval
+            },
+            product_data: {
+                name: req.body.name
+            }
+        })
+        
+        const plan = await SubscriptionPlan.create({...req.body, stripePriceId: price.id});
 
+        session.commitTransaction();
         res.status(201).json({success: true, data: plan});
     } catch (error) {
+        session.abortTransaction();
+        session.endSession();
         next(error)
     }
 }
