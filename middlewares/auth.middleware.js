@@ -2,7 +2,7 @@ import jwt, { decode } from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/env.js';
 import User from '../models/user.model.js';
 
-const authorize = async (req, res, next) => {
+export const authorize = async (req, res, next) => {
     try {
         let token;
 
@@ -27,4 +27,17 @@ const authorize = async (req, res, next) => {
     }
 }
 
-export default authorize;
+export const requirePlan = (planNames) => {
+  return async (req, res, next) => {
+    const userPlan = req.user.plan;
+    
+    if (!planNames.includes(userPlan)) {
+      return res.status(403).json({ 
+        error: 'Plan upgrade required',
+        message: `This feature requires one of the following plans: ${planNames.join(', ')}`
+      });
+    }
+    
+    next();
+  };
+};
