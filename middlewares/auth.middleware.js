@@ -1,6 +1,7 @@
 import jwt, { decode } from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/env.js';
 import User from '../models/user.model.js';
+import Subscripton from '../models/subscription.model.js';
 
 export const authorize = async (req, res, next) => {
     try {
@@ -29,9 +30,9 @@ export const authorize = async (req, res, next) => {
 
 export const requirePlan = (planNames) => {
   return async (req, res, next) => {
-    const userPlan = req.user.plan;
+    const userSubscription = Subscripton.findOne({userId: req.user.id, status: "active"}).populate("planId");
     
-    if (!planNames.includes(userPlan)) {
+    if (!userSubscription || !planNames.includes(userSubscription.planId.name)) {
       return res.status(403).json({ 
         error: 'Plan upgrade required',
         message: `This feature requires one of the following plans: ${planNames.join(', ')}`
