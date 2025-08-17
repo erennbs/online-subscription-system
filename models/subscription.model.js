@@ -15,7 +15,7 @@ const subscriptionSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["active", "canceled", "expired"],
+        enum: ["active", "canceled", "expired", "onhold"],
         default: "active",
         index: true
     },
@@ -40,6 +40,9 @@ const subscriptionSchema = new mongoose.Schema({
     cancelAtPeriodEnd: {
         type: Boolean,
         default: false
+    },
+    stripeSubscriptionId: {
+        type: String
     }
 }, {timestamps: true});
 

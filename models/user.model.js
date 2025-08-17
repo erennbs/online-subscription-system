@@ -20,6 +20,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "User password is required"],
         minLength: 6
+    },
+    stripeCustomerId: {
+        type: String
     }
 }, {timestamps: true});
 

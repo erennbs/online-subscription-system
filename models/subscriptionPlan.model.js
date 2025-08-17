@@ -32,6 +32,9 @@ const subscriptionPlanSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    stripePriceId: {
+        type: String
     }
 
 }, {timestamps: true});
