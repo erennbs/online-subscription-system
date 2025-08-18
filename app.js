@@ -10,7 +10,13 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({
+        verify(req, res, buf, encoding) {
+            if (req.path.includes('webhook')){
+                req.rawBody = buf.toString(); // sets raw string in req.rawBody variable
+            }
+        }
+    }));
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 

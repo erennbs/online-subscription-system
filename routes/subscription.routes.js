@@ -1,6 +1,6 @@
-import { Router } from "express";
-import { cancelSubscription, changePlan, createSubscription, getAllSubscriptions, getUserSubscription } from "../controllers/subscription.controller.js";
-import authorize from "../middlewares/auth.middleware.js";
+import express, { Router } from "express";
+import { cancelSubscription, changePlan, createCheckoutSession, createSubscription, getAllSubscriptions, getUserSubscription, stripeWebhook } from "../controllers/subscription.controller.js";
+import {authorize} from "../middlewares/auth.middleware.js";
 
 const subscriptionRouter = Router();
 
@@ -8,7 +8,9 @@ subscriptionRouter.get('/', authorize, getAllSubscriptions);
 
 subscriptionRouter.get('/user/:id', authorize, getUserSubscription);
 
-subscriptionRouter.post('/subscribe', authorize, createSubscription);
+subscriptionRouter.post('/create-checkout-session', authorize, createCheckoutSession);
+
+subscriptionRouter.post('/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
 subscriptionRouter.put('/change', authorize, changePlan);
 

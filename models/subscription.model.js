@@ -32,7 +32,7 @@ const subscriptionSchema = new mongoose.Schema({
         required: false,
         validate: {
             validator: function (value) { 
-                return value > this.startDate
+                return value > this.currentPeriodStart
             },
             message: "Renewal date can't be past date"
         }

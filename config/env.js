@@ -9,5 +9,6 @@ export const {
     DB_URI, 
     JWT_SECRET, 
     JWT_EXPIRES_IN,
-    STRIPE_SECRET
+    STRIPE_SECRET,
+    STRIPE_WEBHOOK_SECRET
 } = process.env;
