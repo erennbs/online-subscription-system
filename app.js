@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json({
         verify(req, res, buf, encoding) {
             if (req.path.includes('webhook')){
-                req.rawBody = buf.toString(); // sets raw string in req.rawBody variable
+                req.rawBody = buf.toString();
             }
         }
     }));

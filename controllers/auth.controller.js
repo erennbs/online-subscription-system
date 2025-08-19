@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 import User from '../models/user.model.js';
 import { JWT_EXPIRES_IN, JWT_SECRET } from "../config/env.js";
+import { stripe } from "../config/stripe.js";
 
 export const signUp = async (req, res, next) => {
     const session = await mongoose.startSession();
@@ -23,7 +24,12 @@ export const signUp = async (req, res, next) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = await User.create([{name, email, password: hashedPassword}], {session});
+        const customer = await stripe.customers.create({
+                name: req.user.name,
+                email: req.user.email,
+            });
+
+        const newUser = await User.create([{name, email, password: hashedPassword, stripeCustomerId: customer.id}], {session});
 
         const token = jwt.sign({userId: newUser[0]._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES_IN});
 

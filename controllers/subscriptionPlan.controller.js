@@ -29,7 +29,6 @@ export const getSubscriptionPlan = async (req, res, next) => {
 }
 
 export const createSubscriptionPlan = async (req, res, next) => {
-    const session = await mongoose.startSession();
     try {
         session.startTransaction();
         const price = await stripe.prices.create({
@@ -45,11 +44,8 @@ export const createSubscriptionPlan = async (req, res, next) => {
         
         const plan = await SubscriptionPlan.create({...req.body, stripePriceId: price.id});
 
-        session.commitTransaction();
         res.status(201).json({success: true, data: plan});
     } catch (error) {
-        session.abortTransaction();
-        session.endSession();
         next(error)
     }
 }

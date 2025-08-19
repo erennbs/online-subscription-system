@@ -8,10 +8,6 @@ userRouter.get('/', authorize, getUsers);
 
 userRouter.get('/:id', authorize, getUser);
 
-userRouter.post('/', (req, res) => {});
-
-userRouter.put('/:id', (req, res) => {});
-
 userRouter.delete('/:id', authorize, deleteUser);
 
 export default userRouter;

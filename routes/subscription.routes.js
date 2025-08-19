@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { cancelSubscription, changePlan, createCheckoutSession, createSubscription, getAllSubscriptions, getUserSubscription, stripeWebhook } from "../controllers/subscription.controller.js";
+import { cancelSubscription, changePlan, createCheckoutSession, getAllSubscriptions, getUserSubscription, stripeWebhook } from "../controllers/subscription.controller.js";
 import {authorize} from "../middlewares/auth.middleware.js";
 
 const subscriptionRouter = Router();
