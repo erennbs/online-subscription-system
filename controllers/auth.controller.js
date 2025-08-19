@@ -25,8 +25,8 @@ export const signUp = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const customer = await stripe.customers.create({
-                name: req.user.name,
-                email: req.user.email,
+                name: name,
+                email: email,
             });
 
         const newUser = await User.create([{name, email, password: hashedPassword, stripeCustomerId: customer.id}], {session});
