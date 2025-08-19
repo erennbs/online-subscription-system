@@ -4,6 +4,7 @@ import SubscriptionPlan from '../models/subscriptionPlan.model.js';
 import {stripe} from '../config/stripe.js';
 import { STRIPE_WEBHOOK_SECRET } from '../config/env.js';
 import User from '../models/user.model.js';
+import subscriptionRouter from '../routes/subscription.routes.js';
 
 export const getAllSubscriptions = async (req, res, next) => {
     try {
@@ -62,7 +63,6 @@ export const cancelSubscription = async (req, res, next) => {
 
 export const createCheckoutSession = async (req, res, next) => {
     try {
-        session.startTransaction()
         const plan = await SubscriptionPlan.findById(req.body.planId);
         
         if (!plan) {
@@ -144,16 +144,22 @@ export const stripeWebhook = async (req, res, next) => {
                 currentPeriodStart: startDate,
                 currentPeriodEnd: end,
                 cancelAtPeriodEnd: false,
+                stripeSubscriptionId: data.object.id
             };
 
             await Subscription.create(subscription);
         break;
-        case 'customer.subscription.deleted':
-            console.log("Cancelled");
-            
+        case 'customer.subscription.deleted':            
             const subscipritonToCancel = await Subscription.findOne({stripeSubscriptionId: data.object.id, status: "active"});
             subscipritonToCancel.status = "canceled";
             subscipritonToCancel.save();
+        break;
+        case 'invoice.payment_succeeded':
+            const subscriptionToUpdate = await Subscription.findOne({userId: user._id});
+            if (subscriptionToUpdate) {
+                sub.status = "active";
+                sub.save();
+            }
         break;
         case 'invoice.payment_failed':
         // The payment failed or the customer does not have a valid payment method.
@@ -169,6 +175,19 @@ export const stripeWebhook = async (req, res, next) => {
 
   res.sendStatus(200);
 }
+
+export const createCustomerPortalSession = async (req, res) => {
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: req.user.stripeCustomerId,
+      return_url: "https://www.google.com",
+    });
+
+    res.json({ url: session.url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const changePlan = async (res, req, next) => {
     
